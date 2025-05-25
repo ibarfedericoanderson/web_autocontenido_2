@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparación de Metodologías: MC14 vs MUDI</title>
+    <script src="mermaid.js"></script>
+    <link href="styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="fontawesome.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #121212 0%, #2c3e50 100%);
+            color: white;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1900px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .author {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .mermaid-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: visible;
+        }
+
+        .comparison-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        @media (min-width: 1024px) {
+            .comparison-section {
+                flex-direction: row;
+            }
+            
+            .diagram-column {
+                flex: 1;
+            }
+        }
+
+        .diagram-column {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .diagram-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #64b5f6;
+        }
+
+        .legend {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 8px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .explanation {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            line-height: 1.6;
+        }
+
+        .explanation h3 {
+            color: #64b5f6;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .explanation p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        /* Estilos para tooltips personalizados */
+        .custom-tooltip {
+            position: absolute;
+            background: rgba(20, 20, 20, 0.95);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 450px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            z-index: 1000;
+            display: none;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .custom-tooltip h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #64b5f6;
+            border-bottom: 2px solid rgba(100, 181, 246, 0.3);
+            padding-bottom: 8px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .custom-tooltip p {
+            margin: 8px 0;
+            text-align: justify;
+        }
+
+        .custom-tooltip .etapa-info {
+            background: rgba(100, 181, 246, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            border-left: 3px solid #64b5f6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header, .mermaid-container, .legend, .explanation {
+                padding: 15px;
+            }
+            
+            .custom-tooltip {
+                max-width: 300px;
+                font-size: 12px;
+            }
+        }
+
+        /* Print styles for PDF export */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            
+            .container {
+                max-width: none !important;
+                padding: 0 !important;
+            }
+            
+            .header, .mermaid-container, .legend, .explanation {
+                background: white !important;
+                border: 1px solid #ccc !important;
+                backdrop-filter: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="text-4xl font-bold mb-4">
+                <i class="fas fa-project-diagram mr-3"></i>
+                Comparación de Metodologías: MC14 vs MUDI
+            </h1>
+            <h2 class="text-2xl mb-4">Diagramas de Flujo según ISO 5807:1985</h2>
+            <p class="text-lg opacity-90">
+                Análisis comparativo entre la Metodología de Investigación Científica (MC14) y el Método Unificado para el Diseño Industrial (MUDI)
+            </p>
+            <div class="author">
+                <p class="text-lg">
+                    <i class="fas fa-user-graduate mr-2"></i>
+                    <strong>Autor:</strong> © 2025 Ibar Federico Anderson, Ph.D., Master, Industrial Designer
+                </p>
+            </div>
+        </div>
+
+        <!-- Sección de comparación de diagramas -->
+        <div class="comparison-section">
+            <div class="diagram-column">
+                <div class="diagram-title">
+                    <i class="fas fa-flask mr-2"></i>
+                    Metodología de Investigación Científica (MC14)
+                </div>
+                <div class="mermaid" id="mc14-diagram">
+%%{
+  init: {
+    'theme': 'base',
+    'themeVariables': {
+      'primaryColor': '#ffffff',
+      'primaryTextColor': '#000000',
+      'primaryBorderColor': '#ffffff',
+      'lineColor': '#ffffff',
+      'secondaryColor': '#006100',
+      'tertiaryColor': '#121212'
+    }
+  }
+}%%
+
+flowchart TB
+    %% Definición de estilos
+    classDef inicio fill:#9ccc65,stroke:#7cb342,stroke-width:1px
+    classDef instancia fill:#ffb74d,stroke:#ff9800,stroke-width:1px
+    classDef fase fill:#90caf9,stroke:#2196f3,stroke-width:1px
+    classDef momento fill:#f48fb1,stroke:#e91e63,stroke-width:1px
+    classDef decision fill:#ffcccc,stroke:#cc0000,stroke-width:1px
+    classDef datos fill:#ccffff,stroke:#008888,stroke-width:1px
+    classDef documento fill:#ffccff,stroke:#880088,stroke-width:1px
+    
+    %% Símbolos de inicio y fin según ISO 5807
+    Start((🚀<br/>INICIO)) ---> A
+    
+    %% Nodo principal
+    A[🔬 Proceso de<br/>Investigación Científica] ---> B
+    
+    %% Instancias principales - Hexágonos según ISO 5807
+    B{{🧠 1. INSTANCIA DE<br/>VALIDACIÓN CONCEPTUAL}} ---> C
+    B ---> D
+    E{{📊 2. INSTANCIA DE<br/>VALIDACIÓN EMPÍRICA}} ---> F
+    E ---> G
+    H{{⚙️ 3. INSTANCIA DE<br/>VALIDACIÓN OPERATIVA}} ---> I
+    H ---> J
+    K{{📝 4. INSTANCIA DE<br/>VALIDACIÓN EXPOSITIVA}} ---> L
+    K ---> M
+    
+    %% Fase 1 y momentos - Paralelogramos para fases
+    C[/📋 Fase 1:<br/>Planteamientos/] ---> C1
+    C ---> C2
+    C ---> C3
+    C ---> C4
+    C1([❓ a. Examen<br/>de problemas]) ---> CM
+    C2([💡 b. Conocimientos<br/>previos]) ---> CM
+    C3([🔄 c. Relaciones<br/>lógicas]) ---> CM
+    C4([🎯 d. Objetivos]) ---> CM
+    CM{Examen de problemas<br/>Conocimientos previos<br/>Relaciones lógicas<br/>Objetivos}
+    
+    %% Fase 2 y momentos
+    D[/📝 Fase 2:<br/>Formulación/] ---> D1
+    D ---> D2
+    D ---> D3
+    D ---> D4
+    D1([❓ a. Formulación<br/>del problema]) ---> DM
+    D2([💭 b. Hipótesis<br/>sustantivas]) ---> DM
+    D3([📚 c. Marco<br/>teórico]) ---> DM
+    D4([🎯 d. Formulación<br/>de objetivos]) ---> DM
+    DM{Hipótesis sustantivas<br/>Marco teórico<br/>Modelo del objeto<br/>Consecuencias contrastables}
+    
+    %% Fase 3 y momentos
+    F[/🔍 Fase 3:<br/>Diseño del objeto/] ---> F1
+    F ---> F2
+    F ---> F3
+    F ---> F4
+    F1([🧩 a. Análisis<br/>de estructura]) ---> FM
+    F2([🔄 b. Análisis<br/>de hipótesis]) ---> FM
+    F3([📊 c. Fuentes<br/>de datos]) ---> FM
+    F4([📏 d. Dimensiones<br/>de variables]) ---> FM
+    FM[(Definición de<br/>matriz de datos:<br/>UA, V)]
+    
+    %% Fase 4 y momentos
+    G[/⚙️ Fase 4:<br/>Diseño de procedimientos/] ---> G1
+    G ---> G2
+    G ---> G3
+    G ---> G4
+    G1([🧪 a. Muestras<br/>posibles]) ---> GM
+    G2([📊 b. Plan de<br/>tratamiento]) ---> GM
+    G3([🔧 c. Recursos<br/>y contextos]) ---> GM
+    G4([🔨 d. Diseño de<br/>instrumentos]) ---> GM
+    GM[(Operacionalización:<br/>I, R)]
+    
+    %% Fase 5 y momentos
+    I[/📥 Fase 5:<br/>Recolección y procesamiento/] ---> I1
+    I ---> I2
+    I ---> I3
+    I ---> I4
+    I1([🧪 a. Pruebas<br/>piloto]) ---> IM
+    I2([📊 b. Recolección]) ---> IM
+    I3([⚙️ c. Procesamiento]) ---> IM
+    I4([📋 d. Tabulación]) ---> IM
+    IM[(Llenado de<br/>matriz de datos)]
+    
+    %% Fase 6 y momentos
+    J[/📊 Fase 6:<br/>Tratamiento y análisis/] ---> J1
+    J ---> J2
+    J ---> J3
+    J ---> J4
+    J1([💬 a. Discusión<br/>de resultados]) ---> JM
+    J2([📈 b. Análisis<br/>estadístico]) ---> JM
+    J3([🔍 c. Interpretación]) ---> JM
+    J4([📝 d. Conclusiones]) ---> JM
+    JM[(Análisis de<br/>matriz de datos)]
+    
+    %% Fase 7 y momentos
+    L[/📑 Fase 7:<br/>Informes parciales/] ---> L1
+    L ---> L2
+    L ---> L3
+    L ---> L4
+    L1([⏱️ a. Evaluación<br/>del período]) ---> LM
+    L2([📊 b. Evaluación<br/>de resultados]) ---> LM
+    L3([❓ c. Nuevos<br/>problemas]) ---> LM
+    L4([💡 d. Sugerencias]) ---> LM
+    LM>Comunicación<br/>de avances]
+    
+    %% Fase 8 y momentos
+    M[/📚 Fase 8:<br/>Exposición sistemática/] ---> M1
+    M ---> M2
+    M ---> M3
+    M ---> M4
+    M ---> M5
+    M ---> M6
+    M1([👥 a. Destinatarios]) ---> MM
+    M2([📋 b. Ordenamiento<br/>de tesis]) ---> MM
+    M3([🔄 c. Desarrollo<br/>de argumentos]) ---> MM
+    M4([✍️ d. Redacción]) ---> MM
+    M5([🔍 e. Revisión]) ---> MM
+    M6([📢 f. Publicación]) ---> MM
+    MM>Informe<br/>final]
+    
+    %% Símbolo de fin
+    MM ---> End((🏁<br/>FIN))
+    
+    %% Conexiones entre fases
+    CM ---> D
+    DM ---> E
+    FM ---> G
+    GM ---> H
+    IM ---> J
+    JM ---> K
+    LM ---> M
+    
+    %% Aplicación de estilos
+    class Start,End inicio
+    class B,E,H,K instancia
+    class C,D,F,G,I,J,L,M fase
+    class CM,DM decision
+    class FM,GM,IM,JM datos
+    class LM,MM documento
+    class C1,C2,C3,C4,D1,D2,D3,D4,F1,F2,F3,F4,G1,G2,G3,G4,I1,I2,I3,I4,J1,J2,J3,J4,L1,L2,L3,L4,M1,M2,M3,M4,M5,M6 momento
+    
+    %% Cambiar todas las flechas del diagrama principal a blanco
+    linkStyle default stroke:#ffffff,stroke-width:2px
+                </div>
+            </div>
+            
+            <div class="diagram-column">
+                <div class="diagram-title">
+                    <i class="fas fa-cogs mr-2"></i>
+                    Método Unificado para el Diseño Industrial (MUDI)
+                </div>
+                <div class="mermaid" id="mudi-diagram">
+%%{
+  init: {
+    'theme': 'base',
+    'themeVariables': {
+      'primaryColor': '#ffffff',
+      'primaryTextColor': '#000000',
+      'primaryBorderColor': '#ffffff',
+      'lineColor': '#ffffff',
+      'secondaryColor': '#006100',
+      'tertiaryColor': '#121212'
+    }
+  }
+}%%
+
+flowchart TB
+    %% Definición de estilos
+    classDef inicio fill:#9ccc65,stroke:#7cb342,stroke-width:1px
+    classDef instancia fill:#ffb74d,stroke:#ff9800,stroke-width:1px
+    classDef fase fill:#90caf9,stroke:#2196f3,stroke-width:1px
+    classDef momento fill:#f48fb1,stroke:#e91e63,stroke-width:1px
+    classDef decision fill:#ffcccc,stroke:#cc0000,stroke-width:1px
+    classDef datos fill:#ccffff,stroke:#008888,stroke-width:1px
+    classDef documento fill:#ffccff,stroke:#880088,stroke-width:1px
+    
+    %% Símbolos de inicio y fin según ISO 5807
+    Start((🚀<br/>INICIO)) ---> A
+    
+    %% Nodo principal
+    A[🎨 Proceso de<br/>Diseño Industrial] ---> B
+    
+    %% Instancias principales - Hexágonos según ISO 5807
+    B{{🔍 1. INSTANCIA DE<br/>INVESTIGACIÓN Y ANÁLISIS}} ---> C
+    B ---> D
+    E{{💡 2. INSTANCIA DE<br/>CONCEPTUALIZACIÓN Y DESARROLLO}} ---> F
+    E ---> G
+    H{{⚖️ 3. INSTANCIA DE<br/>EVALUACIÓN}} ---> I
+    H ---> J
+    K{{🚀 4. INSTANCIA DE<br/>IMPLEMENTACIÓN}} ---> L
+    
+    %% Fase 1 y momentos - Paralelogramos para fases
+    C[/❓ Fase 1:<br/>Identificación del Problema/] ---> C1
+    C ---> C2
+    C ---> C3
+    C1([📋 a. Definición<br/>del problema]) ---> CM
+    C2([⚠️ b. Análisis<br/>de restricciones]) ---> CM
+    C3([🎯 c. Establecimiento<br/>de objetivos]) ---> CM
+    CM{Problema<br/>Restricciones<br/>Objetivos}
+    
+    %% Fase 2 y momentos
+    D[/👥 Fase 2:<br/>Investigación Contextual/] ---> D1
+    D ---> D2
+    D ---> D3
+    D1([👤 a. Análisis<br/>de usuarios]) ---> DM
+    D2([📊 b. Análisis<br/>de mercado]) ---> DM
+    D3([🌍 c. Análisis<br/>de entorno]) ---> DM
+    DM[(Base de Datos<br/>de Investigación)]
+    
+    %% Fase 3 y momentos
+    F[/📋 Fase 3:<br/>Análisis de Requerimientos/] ---> F1
+    F ---> F2
+    F ---> F3
+    F1([⚙️ a. Requerimientos<br/>funcionales]) ---> FM
+    F2([🔧 b. Requerimientos<br/>técnicos]) ---> FM
+    F3([🎨 c. Requerimientos<br/>estéticos]) ---> FM
+    FM[(Lista de<br/>Requerimientos<br/>Jerarquizados)]
+    
+    %% Fase 4 y momentos
+    G[/🔍 Fase 4:<br/>Análisis de Precedentes/] ---> G1
+    G ---> G2
+    G ---> G3
+    G1([🔎 a. Soluciones<br/>existentes]) ---> GM
+    G2([💻 b. Tecnologías<br/>aplicables]) ---> GM
+    G3([💫 c. Oportunidades<br/>de innovación]) ---> GM
+    GM[(Análisis<br/>Comparativo)]
+    
+    %% Fase 5 y momentos - Fase creativa con divergencia y convergencia
+    I[/💭 Fase 5:<br/>Ideación y Conceptualización/] ---> I1
+    I ---> I2
+    I ---> I3
+    I1([🌀 a. Divergencia:<br/>Generación de ideas]) ---> IM
+    I2([✏️ b. Bocetos 2D y<br/>Maquetas 3D]) ---> IM
+    I3([🔄 c. Convergencia:<br/>Selección de conceptos]) ---> IM
+    IM[(Banco<br/>de Ideas)]
+    
+    %% Fase 6 y momentos
+    J[/⚙️ Fase 6:<br/>Desarrollo Técnico/] ---> J1
+    J ---> J2
+    J ---> J3
+    J1([📐 a. Especificaciones<br/>técnicas]) ---> JM
+    J2([🧱 b. Materiales<br/>y procesos]) ---> JM
+    J3([⚖️ c. Viabilidad<br/>productiva]) ---> JM
+    JM[(Especificaciones<br/>Técnicas)]
+    
+    %% Fase 7 y momentos - Prototipado con énfasis en 2D y 3D
+    L[/🧪 Fase 7:<br/>Prototipado y Validación/] ---> L1
+    L ---> L2
+    L ---> L3
+    L ---> L4
+    L1([🔨 a. Prototipos<br/>físicos y virtuales]) ---> LM
+    L2([📱 b. Modelos 2D<br/>y maquetas 3D]) ---> LM
+    L3([👥 c. Pruebas<br/>con usuarios]) ---> LM
+    L4([🔄 d. Ajustes<br/>finales]) ---> LM
+    LM>Documentación<br/>del Diseño]
+    
+    %% Fase 8 y momentos
+    M[/🚀 Fase 8:<br/>Implementación y Seguimiento/] ---> M1
+    M ---> M2
+    M ---> M3
+    M ---> M4
+    M1([📋 a. Documentación<br/>técnica]) ---> MM
+    M2([🏭 b. Supervisión<br/>de producción]) ---> MM
+    M3([🚀 c. Lanzamiento]) ---> MM
+    M4([📊 d. Seguimiento<br/>post-implementación]) ---> MM
+    MM>Informe<br/>final]
+    
+    %% Símbolo de fin
+    MM ---> End((🏁<br/>FIN))
+    
+    %% Conexiones entre fases
+    CM ---> D
+    DM ---> E
+    FM ---> G
+    GM ---> H
+    IM ---> J
+    JM ---> K
+    LM ---> M
+    
+    %% Conexiones de retroalimentación iterativa (mantenidas del MUDI original)
+    L -.->|Retroalimentación| C
+    J -.->|Refinamiento| I
+    I -.->|Revisión| F
+    K -.->|Rediseño| B
+    
+    %% Aplicación de estilos
+    class Start,End inicio
+    class B,E,H,K instancia
+    class C,D,F,G,I,J,L,M fase
+    class CM,DM decision
+    class FM,GM,IM,JM datos
+    class LM,MM documento
+    class C1,C2,C3,D1,D2,D3,F1,F2,F3,G1,G2,G3,I1,I2,I3,J1,J2,J3,L1,L2,L3,L4,M1,M2,M3,M4 momento
+    
+    %% Cambiar todas las flechas del diagrama principal a blanco
+    linkStyle default stroke:#ffffff,stroke-width:2px
+                </div>
+            </div>
+        </div>
+
+        <!-- Leyenda común -->
+        <div class="legend">
+            <h3 class="text-2xl font-bold mb-4">
+                <i class="fas fa-info-circle mr-2"></i>
+                Leyenda de Símbolos ISO 5807
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #9ccc65;"></div>
+                    <span><strong>Círculo:</strong> Inicio/Fin del proceso</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #ffb74d;"></div>
+                    <span><strong>Hexágono:</strong> Instancias de validación</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #90caf9;"></div>
+                    <span><strong>Paralelogramo:</strong> Fases del proceso</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f48fb1;"></div>
+                    <span><strong>Círculo pequeño:</strong> Momentos específicos</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #ffcccc;"></div>
+                    <span><strong>Rombo:</strong> Puntos de decisión</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #ccffff;"></div>
+                    <span><strong>Cilindro:</strong> Matrices de datos</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #ffccff;"></div>
+                    <span><strong>Documento:</strong> Informes y documentación</span>
+                </div>
+            </div>
+            <div class="mt-4 text-sm opacity-75">
+                <p><strong>Líneas sólidas blancas:</strong> Flujo principal del proceso</p>
+                <p><strong>Líneas punteadas:</strong> Retroalimentación e iteraciones (presentes en el diagrama MUDI)</p>
+            </div>
+        </div>
+
+        <!-- Explicación de la comparación -->
+        <div class="explanation">
+            <h3 class="text-2xl font-bold mb-4">
+                <i class="fas fa-exchange-alt mr-2"></i>
+                Análisis Comparativo
+            </h3>
+            <p>
+                Los diagramas presentados muestran la adaptación del Método Unificado para el Diseño Industrial (MUDI) para que coincida en lógica y símbolos con la Metodología de Investigación Científica (MC14), manteniendo la esencia de cada metodología pero unificando su representación visual según el estándar ISO 5807.
+            </p>
+            <p>
+                <strong>Similitudes estructurales:</strong> Ambas metodologías se organizan en instancias de validación que contienen fases específicas, y estas a su vez incluyen momentos o actividades concretas. El flujo principal sigue una dirección de arriba hacia abajo, con conexiones claras entre las diferentes etapas del proceso.
+            </p>
+            <p>
+                <strong>Diferencias conceptuales:</strong> Mientras que MC14 se enfoca en la validación de hipótesis y la generación de conocimiento científico, MUDI se orienta hacia la resolución de problemas de diseño y la creación de productos. Esta diferencia conceptual se refleja en los nombres y contenidos de las instancias y fases, aunque la estructura lógica se ha unificado.
+            </p>
+            <p>
+                <strong>Fase creativa en MUDI:</strong> Se ha destacado especialmente la fase creativa del MUDI, mostrando claramente los procesos de divergencia (generación de ideas) y convergencia (selección de conceptos), así como la creación de bocetos 2D y maquetas 3D. Esta fase es fundamental en el diseño industrial y representa una diferencia significativa respecto a la metodología científica.
+            </p>
+            <p>
+                <strong>Paralelismo conceptual:</strong> Es importante destacar el paralelismo entre la publicación académica en MC14 (fase final de exposición sistemática) y la fabricación industrial en MUDI (fase final de implementación). Ambas representan la materialización final del proceso: en MC14 como conocimiento documentado y en MUDI como producto fabricado.
+            </p>
+            <p>
+                <strong>Retroalimentación:</strong> Una característica distintiva del MUDI es la inclusión de líneas de retroalimentación punteadas que representan la naturaleza iterativa del proceso de diseño, permitiendo regresar a etapas anteriores cuando sea necesario. Esta característica se ha mantenido en la adaptación para preservar la esencia del proceso de diseño industrial.
+            </p>
+        </div>
+
+        <!-- Tooltip Container -->
+        <div class="custom-tooltip" id="tooltip"></div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2025 - Ibar Federico Anderson, Ph.D., Master, Industrial Designer | Diagramas de flujo según ISO 5807:1985</p>
+        </div>
+    </div>
+
+    <script src="tooltips.js"></script>
+</body>
+</html>
